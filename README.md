@@ -5,7 +5,7 @@ A simple music oriented chat bot with various useful commands
 ### Commands
 ------------------
 
-**!play** - Plays any valid youtube URL
+**!play <url>** - Plays any valid youtube URL
 
 **!skip** - Skips to the next song in the queue
 
