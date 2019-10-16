@@ -13,7 +13,9 @@ A simple music oriented chat bot with various useful commands
 
 **!pause** - Pauses the current song, use again to resume
 
-**!leave** - Force bot to leave the current voice channel 
+**!leave** - Force bot to leave the current voice channel
+
+**!d2time** - Returns hours played across all Destiny 2 accounts
 
 **!urban [query]**  - Returns the first result from Urban Dictionary
 
