@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { prefix, token, commands } = require("./config.json");
+const { prefix, token, commands, d2APIkey } = require("./config.json");
 const ytdl = require("ytdl-core");
 const fetch = require("node-fetch");
 
@@ -70,6 +70,17 @@ zana.on("message", async message => {
 		else {
 			message.reply("I must be in a voice channel in order to leave!");
 		}
+	}
+
+	else if (command === "d2time") {
+		const data = await fetch("https://www.bungie.net/Platform/Destiny2/3/Profile/4611686018467716166/Character/2305843009404638901/?components=200", {
+			headers: {
+				"X-API-Key": d2APIkey,
+			},
+		}).then(response => response.json());
+
+		const msg = "Account 'D4NDK' has " + Math.floor(data.Response.character.data.minutesPlayedTotal / 60) + " hours played across all platforms.";
+		message.channel.send(msg);
 	}
 
 	else if (command === "urban") {
