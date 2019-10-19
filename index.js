@@ -21,21 +21,20 @@ zana.on("message", async message => {
 	const command = args.shift().toLowerCase();
 
 	if (command === "play") {
-		if (!args.length) {
-			return message.reply("\n" + commands[0]);
-		}
+		if (!args.length) return message.reply("\n" + commands[0]);
 		if (message.member.voiceChannel) {
-			queue.push(args[0]);
-			if (!message.guild.voiceConnection) {
-				if (ytdl.validateURL(args[0])) {
-					const connection = await message.member.voiceChannel.join();
-					play(connection, message);
-				}
-				else {
-					return message.reply("Not a valid URL! Please try again!");
-				}
+			if (ytdl.validateURL(args[0])) {
+				queue.push(args[0]);
 			}
-			if (message.guild.voiceConnection.speaking) message.reply("Song added to the queue!");
+			else {
+				return message.reply("Not a valid YouTube URL!");
+			}
+			if (!message.guild.voiceConnection) {
+				const connection = await message.member.voiceChannel.join()
+					.catch(err => console.error(err));
+				play(connection, message);
+			}
+			if (message.guild.voiceConnection.speaking) message.reply("Added to the queue!");
 		}
 		else {
 			return message.reply("You must be in a voice channel for me to join!");
