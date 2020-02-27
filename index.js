@@ -27,6 +27,7 @@ zana.on("message", async message => {
 				queue.push(args[0]);
 			}
 			else {
+				// use all args to search for the song on youtube
 				return message.reply("Not a valid YouTube URL!");
 			}
 			if (!message.guild.voiceConnection) {
