@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const { prefix, token, commands, d2APIkey } = require("./config.json");
 const ytdl = require("ytdl-core");
 const fetch = require("node-fetch");
+const yts = require("yt-search");
 
 const zana = new Discord.Client();
 let dispatcher;
@@ -25,20 +26,23 @@ zana.on("message", async message => {
 		if (message.member.voiceChannel) {
 			if (ytdl.validateURL(args[0])) {
 				queue.push(args[0]);
+				if (message.guild.voiceConnection.speaking) message.reply("Added to the queue!");
 			}
 			else {
-				// use all args to search for the song on youtube
-				return message.reply("Not a valid YouTube URL!");
+				await yts(args.join(" "), function(err, r) {
+					const videos = r.videos;
+					queue.push(videos[0].url);
+					if (message.guild.voiceConnection.speaking) message.reply(videos[0].title + " added to the queue.");
+				});
 			}
 			if (!message.guild.voiceConnection) {
 				const connection = await message.member.voiceChannel.join()
 					.catch(err => console.error(err));
 				play(connection, message);
 			}
-			if (message.guild.voiceConnection.speaking) message.reply("Added to the queue!");
 		}
 		else {
-			return message.reply("You must be in a voice channel for me to join!");
+			return message.reply("You must be in a voice channel to us this!");
 		}
 	}
 
@@ -138,20 +142,22 @@ zana.on("message", async message => {
 });
 
 function play(connection, message) {
-	const url = queue.shift();
-	dispatcher = connection.playStream(ytdl(
-		url, {
-			filter: "audioonly",
-		}));
-	dispatcher.setVolume(0.2);
-	dispatcher.on("end", () => {
-		if (queue[0]) {
-			play(connection, message);
-		}
-		else {
-			connection.disconnect();
-		}
-	});
+	setTimeout(function() {
+		const url = queue.shift();
+		dispatcher = connection.playStream(ytdl(
+			url, {
+				filter: "audioonly",
+			}));
+		dispatcher.setVolume(0.2);
+		dispatcher.on("end", () => {
+			if (queue[0]) {
+				play(connection, message);
+			}
+			else {
+				connection.disconnect();
+			}
+		});
+	}, 1000);
 }
 
 zana.login(token);
