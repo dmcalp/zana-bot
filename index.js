@@ -11,7 +11,9 @@ zana.once("ready", () => {
 	console.log("Zana is ready!");
 });
 
-const queue = [];
+let queue = [];
+const titles = [];
+
 
 zana.on("message", async message => {
 
@@ -26,23 +28,34 @@ zana.on("message", async message => {
 		if (message.member.voiceChannel) {
 			if (ytdl.validateURL(args[0])) {
 				queue.push(args[0]);
-				if (message.guild.voiceConnection.speaking) message.reply("Added to the queue!");
+				message.reply("Song added!");
 			}
 			else {
-				await yts(args.join(" "), function(err, r) {
-					const videos = r.videos;
-					queue.push(videos[0].url);
-					if (message.guild.voiceConnection.speaking) message.reply(videos[0].title + " added to the queue.");
-				});
+				const results = await yts(args.join(" "));
+				if (results.videos[0]) {
+					const video = results.videos[0];
+					titles.push(`${video.title} **[${video.timestamp}]**`);
+					queue.push(video.url);
+					const resp = (message.guild.voiceConnection)
+						? `${video.title} **${video.timestamp}** added to the queue.`
+						: `${video.title} **${video.timestamp}** is now playing`;
+					message.reply(resp);
+					if (queue.length > 1) message.channel.send("\n **Current queue:** \n" + titles.join("\n"));
+				}
+				else {
+					console.log("Returning");
+					return;
+				}
 			}
 			if (!message.guild.voiceConnection) {
-				const connection = await message.member.voiceChannel.join()
-					.catch(err => console.error(err));
-				play(connection, message);
+				message.member.voiceChannel.join().then((connection) => {
+					play(connection, message);
+				});
 			}
+
 		}
 		else {
-			return message.reply("You must be in a voice channel to us this!");
+			return message.reply("You must be in a voice channel to use this!");
 		}
 	}
 
@@ -64,12 +77,19 @@ zana.on("message", async message => {
 
 	else if (command === "pause") {
 		if (!message.guild.voiceConnection) return message.reply("I must be in a voice channel for this command!");
-		dispatcher.paused ? dispatcher.resume() : dispatcher.pause();
+		if (!dispatcher.paused) {
+			dispatcher.pause();
+			message.reply("Track paused, use !pause again to resume.");
+		}
+		else {
+			dispatcher.resume();
+		}
 	}
 
 	else if (command === "leave") {
 		if (message.guild.voiceConnection) {
 			message.guild.voiceConnection.disconnect();
+			queue = [];
 		}
 		else {
 			message.reply("I must be in a voice channel in order to leave!");
@@ -108,8 +128,13 @@ zana.on("message", async message => {
 		message.channel.send(message.author.displayAvatarURL);
 	}
 
+	else if (command === "queue") {
+		const response = (queue.length) ? queue : "The queue is currently empty.";
+		message.reply(response);
+	}
+
 	else if (command === "ping") {
-		message.channel.send(`Your ping is currently: ${message.client.ping}`);
+		message.channel.send(`Zana's ping is currently: ${message.client.ping}`);
 	}
 
 	else if (command === "delete") {
@@ -142,11 +167,12 @@ zana.on("message", async message => {
 });
 
 function play(connection, message) {
-	setTimeout(function() {
-		const url = queue.shift();
+	if (queue[0]) {
+		titles.shift();
 		dispatcher = connection.playStream(ytdl(
-			url, {
+			queue.shift(), {
 				filter: "audioonly",
+				bitrate: 64000,
 			}));
 		dispatcher.setVolume(0.2);
 		dispatcher.on("end", () => {
@@ -157,7 +183,7 @@ function play(connection, message) {
 				connection.disconnect();
 			}
 		});
-	}, 1000);
+	}
 }
 
 zana.login(token);

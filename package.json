@@ -16,6 +16,6 @@
         "node-fetch": "^2.6.0",
         "opusscript": "0.0.7",
         "yt-search": "^1.1.2",
-        "ytdl-core": "^2.0.0"
+        "ytdl-core": "^2.0.1"
     }
 }
