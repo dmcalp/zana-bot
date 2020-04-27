@@ -193,6 +193,7 @@ function play(connection, message) {
 			}
 			else {
 				connection.disconnect();
+				zana.user.setActivity();
 			}
 		});
 	}
