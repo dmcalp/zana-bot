@@ -5,7 +5,8 @@ A simple music oriented chat bot with various useful commands
 ### Commands
 ------------------
 
-**!play [url]** - Plays any valid youtube URL or searches YT for a given query
+**!play [url or query]** - Plays any valid youtube URL or the first YT result found from a query \n
+**Example** - !play www.youtube.com/watch?v1234567890 or !play thunderstruck
 
 **!skip** - Skips to the next song in the queue
 
