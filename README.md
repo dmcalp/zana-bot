@@ -5,7 +5,8 @@ A simple music oriented chat bot with various useful commands
 ### Commands
 ------------------
 
-**!play [url]** - Plays any valid youtube URL
+**!play [url or query]** - Plays any valid youtube URL or the first YT result found from a query  
+**Example** - !play www.youtube.com/watch?v1234567890 or !play thunderstruck
 
 **!skip** - Skips to the next song in the queue
 
@@ -14,6 +15,8 @@ A simple music oriented chat bot with various useful commands
 **!pause** - Pauses the current song, use again to resume
 
 **!leave** - Force bot to leave the current voice channel
+
+**!choose** - Picks from a list of comma separated values  
 
 **!d2time** - Returns hours played across all Destiny 2 accounts
 
