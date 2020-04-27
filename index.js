@@ -101,7 +101,7 @@ zana.on("message", async message => {
 	}
 
 	else if (command === "choose") {
-		const options = message.content.slice(prefix.length + command.length).trim().split(",");
+		const options = message.content.slice(prefix.length + command.length).split(",");
 		const trimmedOptions = options.map(s => s.trim());
 		const choice = trimmedOptions[Math.floor(Math.random() * trimmedOptions.length)];
 		message.channel.send(`I choose: ${choice}.`);
@@ -179,7 +179,7 @@ zana.on("message", async message => {
 
 function play(connection, message) {
 	if (queue[0]) {
-		titles.shift();
+		zana.user.setActivity(titles.shift());
 		dispatcher = connection.playStream(ytdl(
 			queue.shift(), {
 				filter: "audioonly",
