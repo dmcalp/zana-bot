@@ -37,13 +37,17 @@ zana.on("message", async message => {
 					titles.push(`${video.title} **[${video.timestamp}]**`);
 					queue.push(video.url);
 					const resp = (message.guild.voiceConnection)
-						? `${video.title} **${video.timestamp}** added to the queue.`
-						: `${video.title} **${video.timestamp}** is now playing`;
-					message.reply(resp);
-					if (queue.length > 1) message.channel.send("\n **Current queue:** \n" + titles.join("\n"));
+						? `${video.title} **[${video.timestamp}]** added to the queue.`
+						: `${video.title} **[${video.timestamp}]** is now playing.`;
+					if (message.guild.voiceConnection) {
+						message.reply(resp + "\n **Current queue:** \n" + titles.join("\n"));
+					}
+					else {
+						message.reply(resp);
+					}
 				}
 				else {
-					console.log("Returning");
+					console.log("No videos found.");
 					return;
 				}
 			}
@@ -79,7 +83,7 @@ zana.on("message", async message => {
 		if (!message.guild.voiceConnection) return message.reply("I must be in a voice channel for this command!");
 		if (!dispatcher.paused) {
 			dispatcher.pause();
-			message.reply("Track paused, use !pause again to resume.");
+			message.reply("Track paused, use `!pause` again to resume.");
 		}
 		else {
 			dispatcher.resume();
@@ -94,6 +98,13 @@ zana.on("message", async message => {
 		else {
 			message.reply("I must be in a voice channel in order to leave!");
 		}
+	}
+
+	else if (command === "choose") {
+		const options = message.content.slice(prefix.length + command.length).trim().split(",");
+		const trimmedOptions = options.map(s => s.trim());
+		const choice = trimmedOptions[Math.floor(Math.random() * trimmedOptions.length)];
+		message.channel.send(`I choose: ${choice}.`);
 	}
 
 	else if (command === "d2time") {
@@ -157,7 +168,7 @@ zana.on("message", async message => {
 
 	else if (command === "commands") {
 		const embed = new Discord.RichEmbed()
-			.addBlankField()
+			.setTitle("Zana Commands")
 			.setColor("#e60965")
 			.setThumbnail("https://pngimage.net/wp-content/uploads/2018/06/lenny-png-7.png")
 			.setDescription(commands)
@@ -173,6 +184,7 @@ function play(connection, message) {
 			queue.shift(), {
 				filter: "audioonly",
 				bitrate: 64000,
+				highWaterMark: 1 << 25,
 			}));
 		dispatcher.setVolume(0.2);
 		dispatcher.on("end", () => {
