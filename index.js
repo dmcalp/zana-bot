@@ -184,14 +184,14 @@ zana.on("message", async (message) => {
 				message.reply(err);
 			});
 	}
-	// } else if (command === "choose") {
-	// 	const options = message.content
-	// 		.slice(prefix.length + command.length)
-	// 		.split(",");
-	// 	const trimmedOptions = options.map((s) => s.trim());
-	// 	const choice =
-	// 		trimmedOptions[Math.floor(Math.random() * trimmedOptions.length)];
-	// 	message.channel.send(`I choose: ${choice}.`);
+	else if (command === "choose") {
+		const options = message.content
+			.slice(prefix.length + command.length)
+			.split(",");
+		const trimmedOptions = options.map((s) => s.trim());
+		const choice =
+			trimmedOptions[Math.floor(Math.random() * trimmedOptions.length)];
+		message.channel.send(`I choose: ${choice}.`);
 
 	// } else if (command === "d2time") {
 	// 	const data = await fetch(
@@ -209,60 +209,102 @@ zana.on("message", async (message) => {
 	// 		" hours played across all platforms.";
 	// 	message.channel.send(msg);
 
-	// } else if (command === "urban") {
-	// 	if (!args.length) {
-	// 		return message.channel.send("Usage: !urban word");
-	// 	}
-	// 	const query = args.join("%20");
-	// 	const { list } = await fetch(
-	// 		`https://api.urbandictionary.com/v0/define?term=${query}`
-	// 	).then((response) => response.json());
-	// 	const definition = list[0].definition;
-	// 	const example = list[0].example;
-	// 	const thumbsup = list[0].thumbs_up;
-	// 	const thumbsdown = list[0].thumbs_down;
-	// 	message.channel.send(
-	// 		`**Definition:**\n${definition}\n\n**Example:**\n${example}\n\n**Thumbs Up:** ${thumbsup}  **Thumbs Down:** ${thumbsdown}`
-	// 	);
+	} else if (command === "urban") {
+		if (!args.length) {
+			return message.channel.send("Usage: !urban word");
+		}
+		const query = args.join("%20");
+		const { list } = await fetch(
+			`https://api.urbandictionary.com/v0/define?term=${query}`
+		).then((response) => response.json());
+		const definition = list[0].definition;
+		const example = list[0].example;
+		const thumbsup = list[0].thumbs_up;
+		const thumbsdown = list[0].thumbs_down;
+		message.channel.send(
+			`**Definition:**\n${definition}\n\n**Example:**\n${example}\n\n**Thumbs Up:** ${thumbsup}  **Thumbs Down:** ${thumbsdown}`
+		);
 
-	// } else if (command === "server") {
-	// 	message.channel.send(
-	// 		`The server '${message.guild.name}' was created on ${message.guild.createdAt}`
-	// 	);
+	} else if (command === "server") {
+		message.channel.send(
+			`The server '${message.guild.name}' was created on ${message.guild.createdAt}`
+		);
 
-	// } else if (command === "avatar") {
-	// 	message.channel.send(message.author.displayAvatarURL);
+	} else if (command === "avatar") {
+		message.channel.send(message.author.displayAvatarURL);
 
 	// } else if (command === "ping") {
 	// 	message.channel.send(`Zana's ping is currently: ${message.client.ping}`);
 
-	// } else if (command === "delete") {
-	// 	if (args.length > 0) {
-	// 		if (args[0] > 1 && args[0] <= 10) {
-	// 			const amount = parseInt(args[0]) + 1;
-	// 			message.channel.bulkDelete(amount).catch((err) => {
-	// 				console.error(err);
-	// 				message.reply("Error deleting messages!");
-	// 			});
-	// 		} else {
-	// 			message.reply("The second argument must be 2-10 inclusive");
-	// 		}
-	// 	} else {
-	// 		message.reply(
-	// 			"This method requires an additional argument (2-10 inclusive)"
-	// 		);
-	// 	}
-	// } else if (command === "commands") {
-	// 	const embed = new Discord.RichEmbed()
-	// 		.setTitle("Zana Commands")
-	// 		.setColor("#e60965")
-	// 		.setThumbnail(
-	// 			"https://pngimage.net/wp-content/uploads/2018/06/lenny-png-7.png"
-	// 		)
-	// 		.setDescription(commands)
-	// 		.setTimestamp();
-	// 	message.channel.send(embed);
-	// }
+	} else if (command === "delete") {
+		if (args.length > 0) {
+			if (args[0] > 1 && args[0] <= 10) {
+				const amount = parseInt(args[0]) + 1;
+				message.channel.bulkDelete(amount).catch((err) => {
+					console.error(err);
+					message.reply("Error deleting messages!");
+				});
+			} else {
+				message.reply("The second argument must be 2-10 inclusive");
+			}
+		} else {
+			message.reply(
+				"This method requires an additional argument (2-10 inclusive)"
+			);
+		}
+	} 
+	else if (command === "d2p") {
+		if (!args[0]) { // no value
+			return message.reply("Please enter an amount, e.g 300.50");
+		}
+		const url = "https://api.exchangeratesapi.io/latest?base=USD";
+		const currencies = await fetch(url).then(response => response.json());
+		const dollars = Math.round(args[0].match(/\d+(?:\.\d+)?/)* 100) / 100;
+		if (dollars) { // if regex found an integer
+			const pounds = Math.round(dollars * currencies.rates.GBP * 100) / 100;
+			const embed = new Discord.RichEmbed()
+				.setTitle("USD to GBP")
+				.setColor("#d61313")
+				.setDescription(`**$${dollars.toLocaleString()}** is approximately **£${pounds.toLocaleString()}**`)
+				.setThumbnail("https://cdn.britannica.com/33/4833-004-297297B9/Flag-United-States-of-America.jpg")
+				.setFooter(`Rate taken from ${currencies.date}`);
+			message.reply(embed);
+		} else {
+			message.reply("No valid amount found.");
+		}
+
+	} 
+	else if (command === "p2d") {
+		if (!args[0]) { // no value
+			return message.reply("Please enter an amount, e.g 300.50");
+		}
+		const url = "https://api.exchangeratesapi.io/latest?base=GBP";
+		const currencies = await fetch(url).then(response => response.json());
+		const pounds = Math.round(args[0].match(/\d+(?:\.\d+)?/)* 100) / 100;
+		if (pounds) {
+		const dollars = Math.round(pounds * currencies.rates.USD * 100) / 100;
+		const embed = new Discord.RichEmbed()
+			.setTitle("GBP to USD")
+			.setColor("#eee")
+			.setDescription(`**£${pounds.toLocaleString()}** is approximately **$${dollars.toLocaleString()}**`)
+			.setThumbnail("https://cdn.britannica.com/25/4825-050-12B3A28B/Flag-United-Kingdom.jpg")
+			.setFooter(`Rate taken from ${currencies.date}`);
+		message.reply(embed);
+		} else {
+			message.reply("No valid amount found.");
+		}
+	} 
+	else if (command === "commands") {
+		const embed = new Discord.RichEmbed()
+			.setTitle("Zana Commands")
+			.setColor("#e60965")
+			.setThumbnail(
+				"https://pngimage.net/wp-content/uploads/2018/06/lenny-png-7.png"
+			)
+			.setDescription(commands)
+			.setTimestamp();
+		message.channel.send(embed);
+	}
 });
 
 function play(connection, message) {
