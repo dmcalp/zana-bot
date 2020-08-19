@@ -255,7 +255,7 @@ zana.on("message", async (message) => {
 	} 
 	else if (command === "d2p") {
 		if (!args[0]) { // no value
-			return message.reply("Please enter an amount, e.g 300.50");
+			return message.reply("Please enter an amount after the command, e.g !d2p 300.50");
 		}
 		const url = "https://api.exchangeratesapi.io/latest?base=USD";
 		const currencies = await fetch(url).then(response => response.json());
