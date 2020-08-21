@@ -233,8 +233,8 @@ zana.on("message", async (message) => {
 	} else if (command === "avatar") {
 		message.channel.send(message.author.displayAvatarURL);
 
-	// } else if (command === "ping") {
-	// 	message.channel.send(`Zana's ping is currently: ${message.client.ping}`);
+	} else if (command === "ping") {
+		message.channel.send(`Zana's ping is currently: ${message.client.ping}`);
 
 	} else if (command === "delete") {
 		if (args.length > 0) {
@@ -259,7 +259,8 @@ zana.on("message", async (message) => {
 		}
 		const url = "https://api.exchangeratesapi.io/latest?base=USD";
 		const currencies = await fetch(url).then(response => response.json());
-		const dollars = Math.round(args[0].match(/\d+(?:\.\d+)?/)* 100) / 100;
+		const dollars = args[0].replace(/[^\d.]/g, '')* 100 / 100;
+		console.log(dollars);
 		if (dollars) { // if regex found an integer
 			const pounds = Math.round(dollars * currencies.rates.GBP * 100) / 100;
 			const embed = new Discord.RichEmbed()
@@ -280,7 +281,7 @@ zana.on("message", async (message) => {
 		}
 		const url = "https://api.exchangeratesapi.io/latest?base=GBP";
 		const currencies = await fetch(url).then(response => response.json());
-		const pounds = Math.round(args[0].match(/\d+(?:\.\d+)?/)* 100) / 100;
+		const pounds = args[0].replace(/[^\d.]/g, '')* 100 / 100;
 		if (pounds) {
 		const dollars = Math.round(pounds * currencies.rates.USD * 100) / 100;
 		const embed = new Discord.RichEmbed()
