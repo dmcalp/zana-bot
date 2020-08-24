@@ -182,8 +182,8 @@ zana.on('message', async (message) => {
 		}).catch(err => {
 			message.reply(err);
 		});
-	}
-	else if (command === 'choose') {
+
+	}	else if (command === 'choose') {
 		const options = message.content
 			.slice(prefix.length + command.length)
 			.split(',');
@@ -251,8 +251,7 @@ zana.on('message', async (message) => {
 				'This method requires an additional argument (2-10 inclusive)'
 			);
 		}
-	}
-	else if (command === 'd2p') {
+	}	else if (command === 'd2p') {
 		if (!args[0]) { // no value
 			return message.reply('Please enter an amount after the command, e.g !d2p 300.50');
 		}
@@ -273,8 +272,7 @@ zana.on('message', async (message) => {
 			message.reply('No valid amount found.');
 		}
 
-	}
-	else if (command === 'p2d') {
+	}	else if (command === 'p2d') {
 		if (!args[0]) { // no value
 			return message.reply('Please enter an amount, e.g 300.50');
 		}
@@ -293,8 +291,8 @@ zana.on('message', async (message) => {
 		} else {
 			message.reply('No valid amount found.');
 		}
-	}
-	else if (command === 'commands') {
+
+	}	else if (command === 'commands') {
 		const embed = new Discord.RichEmbed()
 			.setTitle('Zana Commands')
 			.setColor('#e60965')
