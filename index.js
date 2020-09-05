@@ -27,7 +27,7 @@ zana.on('message', async (message) => {
 		if (!servers[message.guild.id]) {
 			servers[message.guild.id] = { queue: [] };
 		}
-		const server = await servers[message.guild.id];
+		const server = servers[message.guild.id];
 		if (!args.length) return message.reply('\n' + commands[0]);
 		if (message.member.voiceChannel) {
 			if (ytdl.validateURL(args[0])) {
@@ -302,6 +302,8 @@ zana.on('message', async (message) => {
 			.setDescription(commands)
 			.setTimestamp();
 		message.channel.send(embed);
+	} else if (command === 'servers') {
+		console.log(servers);
 	}
 });
 
