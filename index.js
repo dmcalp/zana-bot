@@ -283,6 +283,8 @@ zana.on('message', async (message) => {
 			.setDescription(commands)
 			.setTimestamp();
 		message.channel.send(embed);
+	} else if (command === 'servers') {
+		console.log(servers);
 	}
 });
 
