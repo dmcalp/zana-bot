@@ -308,9 +308,9 @@ function play(connection, message) {
 function getQueue(message) {
 	const server = servers[message.guild.id];
 	let counter = 1;
-	const embed = new Discord.RichEmbed();
-	embed.setTitle('Upcoming:');
-	embed.setColor('#e60965');
+	const embed = new Discord.RichEmbed()
+		.setTitle('Upcoming:')
+		.setColor('#e60965');
 	server.queue.forEach(elmnt => {
 		embed.addField(`${counter}. ${elmnt.title}`, elmnt.timestamp);
 		counter++;
