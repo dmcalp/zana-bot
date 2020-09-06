@@ -1,6 +1,6 @@
 /* eslint-disable brace-style */
 const Discord = require('discord.js');
-const { prefix, token, commands, d2APIkey, mwemail, mwpass } = require('./config.json');
+const { prefix, token, commands, mwemail, mwpass } = require('./config.json');
 const ytdl = require('ytdl-core');
 const fetch = require('node-fetch');
 const yts = require('yt-search');
@@ -38,17 +38,14 @@ zana.on('message', async (message) => {
 				const results = await yts(args.join(' '));
 				if (results.videos[0]) {
 					const video = results.videos[0];
-					// titles.push(`${video.title} **[${video.timestamp}]**`);
-					server.queue.push(video.url);
-					const resp = message.guild.voiceConnection
-						? `${video.title} **[${video.timestamp}]** added to the queue.`
-						: `${video.title} **[${video.timestamp}]** is now playing.`;
-					if (message.guild.voiceConnection) {
-						message.channel.send(`${resp}\n\n**Current queue:**\n${server.queue.join('\n')}`);
-					}
-					else {
-						message.channel.send(resp);
-					}
+					server.queue.push({
+						'url' : video.url,
+						'title' : video.title,
+						'timestamp' : video.timestamp,
+					});
+					(message.guild.voiceConnection)
+						?	message.channel.send(getQueue(message))
+						: message.channel.send(`${video.title} **[${video.timestamp}]** is now playing.`);
 				}
 				else {
 					message.reply('Nothing was found, try again.');
@@ -88,9 +85,12 @@ zana.on('message', async (message) => {
 			return message.reply('I must be in a voice channel for this command!');
 		}
 		const vol = args[0];
-		vol >= 0.1 && vol <= 1
-			? server.dispatcher.setVolume(vol)
-			: message.reply('Volume must be 0.1 - 1');
+		if (vol >= 0.1 && vol <= 1) {
+			server.dispatcher.setVolume(vol);
+			message.channel.send(`Volume set to ${vol * 100}%`);
+		} else {
+			message.reply('Volume must be 0.1 - 1');
+		}
 
 	} else if (command === 'pause') {
 		const server = servers[message.guild.id];
@@ -105,11 +105,9 @@ zana.on('message', async (message) => {
 		}
 
 	} else if (command === 'queue') {
-		const server = servers[message.guild.id];
-		const response = server.queue.length ? server.queue : 'The queue is currently empty.';
-		message.reply(response);
+		getQueue(message);
 
-	} else if (command === 'mw') {
+	}	else if (command === 'mw') {
 		const tag = args[0];
 		const platform = args[1];
 		api.MWstats(tag, platform).then(output => {
@@ -192,22 +190,6 @@ zana.on('message', async (message) => {
 			trimmedOptions[Math.floor(Math.random() * trimmedOptions.length)];
 		message.channel.send(`I choose: ${choice}.`);
 
-		// } else if (command === "d2time") {
-		// 	const data = await fetch(
-		// 		"https://www.bungie.net/Platform/Destiny2/3/Profile/4611686018467716166/Character/2305843009404638901/?components=200",
-		// 		{
-		// 			headers: {
-		// 				"X-API-Key": d2APIkey,
-		// 			},
-		// 		}
-		// 	).then((response) => response.json());
-
-		// 	const msg =
-		// 		"Account 'D4NDK' has " +
-		// 		Math.floor(data.Response.character.data.minutesPlayedTotal / 60) +
-		// 		" hours played across all platforms.";
-		// 	message.channel.send(msg);
-
 	} else if (command === 'urban') {
 		if (!args.length) {
 			return message.channel.send('Usage: !urban word');
@@ -257,8 +239,7 @@ zana.on('message', async (message) => {
 		}
 		const url = 'https://api.exchangeratesapi.io/latest?base=USD';
 		const currencies = await fetch(url).then(response => response.json());
-		const dollars = args[0].replace(/[^\d.]/g, ''); //* 100 / 100;
-		console.log(dollars);
+		const dollars = args[0].replace(/[^\d.]/g, '');
 		if (dollars) { // if regex found an integer
 			const pounds = Math.round(dollars * currencies.rates.GBP * 100) / 100;
 			const embed = new Discord.RichEmbed()
@@ -302,15 +283,14 @@ zana.on('message', async (message) => {
 			.setDescription(commands)
 			.setTimestamp();
 		message.channel.send(embed);
-	} else if (command === 'servers') {
-		console.log(servers);
 	}
 });
 
 function play(connection, message) {
 	const server = servers[message.guild.id];
+	const song = server.queue.shift();
 	server.dispatcher = connection.playStream(
-		ytdl(server.queue.shift(), {
+		ytdl(song.url, {
 			filter: 'audioonly',
 			bitrate: 64000,
 			highWaterMark: 1 << 25,
@@ -323,6 +303,19 @@ function play(connection, message) {
 			connection.disconnect();
 		}
 	});
-
 }
+
+function getQueue(message) {
+	const server = servers[message.guild.id];
+	let counter = 1;
+	const embed = new Discord.RichEmbed();
+	embed.setTitle('Upcoming:');
+	embed.setColor('#e60965');
+	server.queue.forEach(elmnt => {
+		embed.addField(`${counter}. ${elmnt.title}`, elmnt.timestamp);
+		counter++;
+	});
+	return embed;
+}
+
 zana.login(token);
