@@ -6,35 +6,48 @@ A simple music oriented chat bot with various useful commands
 ------------------
 
 <h3>!play [url or query]</h3>  
-<p>Plays any valid youtube URL or the first YT result found from a query   
-**Example** - !play www.youtube.com/watch?v1234567890 or !play thunderstruck 
-</p>
+<p>Plays any valid youtube URL or the first YT result found from a query <br>
+  <b>Example</b> - !play www.youtube.com/watch?v1234567890 or !play thunderstruck</p>
 
-**!skip** - Skips to the next song in the queue
+<h3>!skip</h3>
+<p>Skips to the next song in the queue</p>
 
-**!volume [vol]** - Adjusts the volume of the current song (0.1 - 1 inclusive)
+<h3>!volume [vol]</h3>  
+<p>Adjusts the volume of the current song (0.1 - 1 inclusive)</p>
 
-**!pause** - Pauses the current song, use again to resume
+<h3>!pause</h3>
+<p>Pauses the current song, use again to resume</p>
 
-**!leave** - Disconnects Zana from the current voice channel
+<h3>!leave</h3>
+<p>Disconnects Zana from the current voice channel</p>
 
-**!mw [user+ID] \[platform]** - Searches for a MW player's stats. User with ID + battle, xbl or psn  
-**Example** - !mw dandk#21361 battle
+<h3>!mw [user+ID] \[platform]</h3> 
+<p>Searches for a MW player's stats. User with ID + battle, xbl or psn<br>
+  <b>Example</b> - !mw dandk#21361 battle</p>
 
-**!choose [option1, option2, option3]** - Picks from a list of comma separated values
+<h3>!choose [option1, option2, option3]</h3>
+<p>Picks from a list of comma separated values</p>
 
-**!urban [query]**  - Returns the first result from Urban Dictionary
+<h3>!urban [query]</h3>
+<p>Returns the first result from Urban Dictionary</p>
 
-**!d2p [amount]** - Converts a given number of dollars into the GBP equivalent
+<h3>!d2p [amount]</h3>
+<p>Converts a given number of dollars into the GBP equivalent</p>
 
-**!p2d [amount]** - Converts a given number of pounds into the USD equivalent
+<h3>!p2d [amount]</h3>
+<p>Converts a given number of pounds into the USD equivalent</p>
 
-**!server** - Returns creation date of the current server
+<h3>!server</h3>
+<p>Returns creation date of the current server</p>
 
-**!avatar** - Returns the source image of the callers avatar
+<h3>!avatar</h3>
+<p>Returns the source image of the callers avatar</p>
 
-**!ping** - Returns average websocket ping
+<h3>!ping</h3>
+<p>Returns average websocket ping</p>
 
-**!delete [quant]** - Deletes a number of previous messages (2-10 inclusive)  
+<h3>!delete [quant]</h3> 
+<p>Deletes a number of previous messages (2-10 inclusive)</p>
 
-**!commands** - Returns a rich embed message of all current commands
+<h3>!commands</h3>
+<p>Returns a rich embed message of all current commands</p>
