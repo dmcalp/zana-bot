@@ -14,13 +14,18 @@ A simple music oriented chat bot with various useful commands
 
 **!pause** - Pauses the current song, use again to resume
 
-**!leave** - Force bot to leave the current voice channel
+**!leave** - Disconnects Zana from the current voice channel
 
-**!choose** - Picks from a list of comma separated values  
+**!mw [user+ID] \[platform]** - Searches for a MW player's stats. User with ID + battle, xbl or psn
+**Example** !mw dandk#21361 battle
 
-**!d2time** - Returns hours played across all Destiny 2 accounts
+**!choose [option1, option2, option3]** - Picks from a list of comma separated values
 
 **!urban [query]**  - Returns the first result from Urban Dictionary
+
+**!d2p [amount]** - Converts a given number of dollars into the GBP equivalent
+
+**!p2d [amount]** - Converts a given number of pounds into the USD equivalent
 
 **!server** - Returns creation date of the current server
 
