@@ -296,6 +296,7 @@ function play(connection, message) {
 			highWaterMark: 1 << 25,
 		})
 	);
+	server.dispatcher.setVolume(0.2);
 	server.dispatcher.on('end', () => {
 		if (server.queue[0]) {
 			play(connection, message);
