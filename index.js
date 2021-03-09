@@ -43,9 +43,38 @@ zana.on('message', async (message) => {
 						'title' : video.title,
 						'timestamp' : video.timestamp,
 					});
-					(message.guild.voiceConnection)
-						?	message.channel.send(getQueue(message))
-						: message.channel.send(`${video.title} **[${video.timestamp}]** is now playing.`);
+					if (message.guild.voiceConnection) {
+						const response = await message.channel.send(getQueue(message));
+						response.react('🔥');
+					} else {
+						const response = await message.channel.send(`${video.title} **[${video.timestamp}]** is now playing.`);
+
+						response.react('⏸️')
+							.then(() => response.react('⏭️'))
+							.then(() => response.react('⏹️'))
+							.then(() => response.react('🔇'));
+
+						const filter = (reaction, user) => {
+							return ['⏸️', '⏭️', '⏹️', '🔇'].includes(reaction.emoji.name) && user.id === message.author.id;
+						};
+						const collector = response.createReactionCollector(filter);
+
+						collector.on('collect', reaction => {
+							console.log(`Collected ${reaction.emoji.name} from ${reaction.users.last().tag}`);
+							if (reaction.emoji.name === '⏸️') {
+								pause(message);
+							}
+							if (reaction.emoji.name === '⏭️') {
+								skip(message);
+							}
+							if (reaction.emoji.name === '⏹️') {
+								leave(message);
+							}
+							if (reaction.emoji.name === '🔇') {
+								mute(message);
+							}
+						});
+					}
 				}
 				else {
 					message.reply('Nothing was found, try again.');
@@ -66,6 +95,7 @@ zana.on('message', async (message) => {
 		const server = servers[message.guild.id];
 		if (message.guild.voiceConnection) {
 			server.dispatcher.end();
+			message.channel.send('Skipping to next song..');
 		} else {
 			message.reply('I must be in a voice channel in order to skip!');
 		}
@@ -317,6 +347,47 @@ function getQueue(message) {
 		counter++;
 	});
 	return embed;
+}
+
+function pause(message) {
+	const server = servers[message.guild.id];
+	if (!message.guild.voiceConnection) {
+		return message.reply('I must be in a voice channel for this command!');
+	}
+	if (!server.dispatcher.paused) {
+		server.dispatcher.pause();
+		return message.channel.send('Track paused, press `⏸️` or use `!pause` again to resume.');
+	} else {
+		server.dispatcher.resume();
+	}
+}
+
+function skip(message) {
+	const server = servers[message.guild.id];
+	if (message.guild.voiceConnection) {
+		server.dispatcher.end();
+		message.channel.send('Skipping to next song..');
+	} else {
+		message.reply('I must be in a voice channel in order to skip!');
+	}
+}
+
+function leave(message) {
+	const server = servers[message.guild.id];
+	if (message.guild.voiceConnection) {
+		message.guild.voiceConnection.disconnect();
+		server.queue = [];
+	} else {
+		message.reply('I must be in a voice channel in order to leave!');
+	}
+}
+
+function mute(message) {
+	const server = servers[message.guild.id];
+	if (!message.guild.voiceConnection) {
+		return message.reply('I must be in a voice channel for this command!');
+	}
+	server.dispatcher.setVolume(0);
 }
 
 zana.login(token);
