@@ -15,6 +15,7 @@ zana.once('ready', () => {
 api.login(mwemail, mwpass).catch(error => console.log.apply(error));
 
 const servers = {};
+const volume = 0.2;
 
 zana.on('message', async (message) => {
 	if (!message.guild) return;
@@ -92,13 +93,7 @@ zana.on('message', async (message) => {
 		}
 
 	} else if (command === 'skip') {
-		const server = servers[message.guild.id];
-		if (message.guild.voiceConnection) {
-			server.dispatcher.end();
-			message.channel.send('Skipping to next song..');
-		} else {
-			message.reply('I must be in a voice channel in order to skip!');
-		}
+		skip(message);
 
 	} else if (command === 'leave') {
 		const server = servers[message.guild.id];
@@ -366,7 +361,7 @@ function skip(message) {
 	const server = servers[message.guild.id];
 	if (message.guild.voiceConnection) {
 		server.dispatcher.end();
-		message.channel.send('Skipping to next song..');
+		message.channel.send('Skipping song..');
 	} else {
 		message.reply('I must be in a voice channel in order to skip!');
 	}
@@ -387,7 +382,11 @@ function mute(message) {
 	if (!message.guild.voiceConnection) {
 		return message.reply('I must be in a voice channel for this command!');
 	}
-	server.dispatcher.setVolume(0);
+	if (server.dispatcher.volume > 0) {
+		server.dispatcher.setVolume(0);
+	} else {
+		server.dispatcher.setVolume(volume);
+	}
 }
 
 zana.login(token);
