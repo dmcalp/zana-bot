@@ -15,7 +15,6 @@ zana.once('ready', () => {
 api.login(mwemail, mwpass).catch(error => console.log.apply(error));
 
 const servers = {};
-const volume = 0.2;
 
 zana.on('message', async (message) => {
 	if (!message.guild) return;
@@ -56,7 +55,7 @@ zana.on('message', async (message) => {
 							.then(() => response.react('🔇'));
 
 						const filter = (reaction, user) => {
-							return ['⏸️', '⏭️', '⏹️', '🔇'].includes(reaction.emoji.name) && user.id === message.author.id;
+							return ['⏸️', '⏭️', '⏹️', '🔇'].includes(reaction.emoji.name) && user.id != '626948446095671307';
 						};
 						const collector = response.createReactionCollector(filter);
 
@@ -385,7 +384,7 @@ function mute(message) {
 	if (server.dispatcher.volume > 0) {
 		server.dispatcher.setVolume(0);
 	} else {
-		server.dispatcher.setVolume(volume);
+		server.dispatcher.setVolume(0.2);
 	}
 }
 
