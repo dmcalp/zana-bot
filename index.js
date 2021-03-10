@@ -210,8 +210,7 @@ zana.on('message', async (message) => {
 			.slice(prefix.length + command.length)
 			.split(',');
 		const trimmedOptions = options.map((s) => s.trim());
-		const choice =
-			trimmedOptions[Math.floor(Math.random() * trimmedOptions.length)];
+		const choice = trimmedOptions[Math.floor(Math.random() * trimmedOptions.length)];
 		message.channel.send(`I choose: ${choice}.`);
 
 	} else if (command === 'urban') {
