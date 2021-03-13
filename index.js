@@ -43,7 +43,7 @@ zana.on('message', async (message) => {
 						'title' : video.title,
 						'timestamp' : video.timestamp,
 					});
-					if (message.guild.voice.connection) {
+					if (message.guild.voice) {
 						const response = await message.channel.send(getQueue(message));
 						response.react('🔥');
 					} else {
@@ -80,7 +80,7 @@ zana.on('message', async (message) => {
 					return;
 				}
 			}
-			if (!message.guild.voice.connection) {
+			if (!message.guild.voice) {
 				message.member.voice.channel.join().then((connection) => {
 					play(connection, message);
 				});
@@ -307,11 +307,12 @@ zana.on('message', async (message) => {
 	}
 });
 
+
 function play(connection, message) {
 	const server = servers[message.guild.id];
 	const song = server.queue.shift();
 	server.dispatcher = connection.play(
-		ytdl(song.url, {
+		ytdl(song.url || song, {
 			filter: 'audioonly',
 			bitrate: 64000,
 			highWaterMark: 1 << 25,
@@ -319,6 +320,7 @@ function play(connection, message) {
 	server.dispatcher.setVolume(0.2);
 	server.dispatcher.on('finish', () => {
 		if (server.queue[0]) {
+			if (server.queue[0].title != undefined) message.channel.send(`Now playing: **${ server.queue[0].title } [${ server.queue[0].timestamp }]**`);
 			play(connection, message);
 		} else {
 			connection.disconnect();
