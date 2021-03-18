@@ -1,18 +1,25 @@
 /* eslint-disable brace-style */
 const Discord = require('discord.js');
 const { prefix, token, commands, mwemail, mwpass } = require('./config.json');
-const ytdl = require('ytdl-core');
 const fetch = require('node-fetch');
-const yts = require('yt-search');
 const api = require('call-of-duty-api')();
+const fs = require('fs');
 
 const zana = new Discord.Client();
+zana.commands = new Discord.Collection();
 
 zana.once('ready', () => {
 	console.log('Zana is ready!');
 });
 
 api.login(mwemail, mwpass).catch(error => console.log.apply(error));
+
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	zana.commands.set(command.name, command);
+}
 
 const servers = {};
 
@@ -23,6 +30,16 @@ zana.on('message', async (message) => {
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const command = args.shift().toLowerCase();
 
+	if (!zana.commands.has(command)) return;
+
+	try {
+		zana.commands.get(command).execute(message, args, servers);
+	}	catch (error) {
+		console.error(error);
+		message.channel.send('Something went wrong!');
+	}
+
+	/*
 	if (command === 'play') {
 		if (!servers[message.guild.id]) {
 			servers[message.guild.id] = { queue: [] };
@@ -305,9 +322,10 @@ zana.on('message', async (message) => {
 			.setTimestamp();
 		message.channel.send(embed);
 	}
+	*/
 });
 
-
+/*
 function play(connection, message) {
 	const server = servers[message.guild.id];
 	const song = server.queue.shift();
@@ -385,5 +403,6 @@ function mute(message) {
 		server.dispatcher.setVolume(0.2);
 	}
 }
+*/
 
 zana.login(token);
