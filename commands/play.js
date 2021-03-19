@@ -1,11 +1,14 @@
 const yts = require('yt-search');
 const ytdl = require('ytdl-core');
-const Discord = require('discord.js');
 const pause = require('./pause.js');
+const skip = require('./skip.js');
+const mute = require('./mute.js');
+const leave = require('./leave.js');
+
 module.exports = {
 	name: 'play',
 	description: 'Plays audio from a youtube search or link',
-	async execute(message, args, servers) {
+	async execute(message, args, servers, Discord) {
 		if (!servers[message.guild.id]) {
 			servers[message.guild.id] = { queue: [] };
 		}
@@ -25,11 +28,10 @@ module.exports = {
 						'title' : video.title,
 						'timestamp' : video.timestamp,
 					});
-					if (message.guild.voice) {
-						const response = await message.channel.send(getQueue(message));
-						response.react('🔥');
-					} else {
-						const response = await message.channel.send(`${video.title} **[${video.timestamp}]** is now playing.`);
+						if (server.queue[1]) {
+							const response = await message.channel.send(getQueue(message));
+						} else {
+							const response = await message.channel.send(`${video.title} **[${video.timestamp}]** is now playing.`);
 
 						response.react('⏸️')
 							.then(() => response.react('⏭️'))
@@ -46,13 +48,13 @@ module.exports = {
 								pause.execute(message, args, servers);
 							}
 							if (reaction.emoji.name === '⏭️') {
-								skip(message);
+								skip.execute(message, args, servers);
 							}
 							if (reaction.emoji.name === '⏹️') {
-								leave(message);
+								leave.execute(message, args, servers);
 							}
 							if (reaction.emoji.name === '🔇') {
-								mute(message);
+								mute.execute(message, args, servers);
 							}
 						});
 					}
@@ -62,7 +64,7 @@ module.exports = {
 					return;
 				}
 			}
-			if (!message.guild.voice) {
+			if (server.queue.length == 1) {
 				message.member.voice.channel.join().then((connection) => {
 					play(connection, message);
 				});
@@ -71,7 +73,8 @@ module.exports = {
 		
 		function play(connection, message) {
 			const server = servers[message.guild.id];
-			const song = server.queue.shift();
+			// const song = server.queue.shift();
+			const song = server.queue[0];
 			server.dispatcher = connection.play(
 				ytdl(song.url || song, {
 					filter: 'audioonly',
@@ -80,11 +83,13 @@ module.exports = {
 				}));
 			server.dispatcher.setVolume(0.2);
 			server.dispatcher.on('finish', () => {
-				if (server.queue[0]) {
+				if (server.queue[1]) {
+					server.queue.shift();
 					if (server.queue[0].title != undefined) message.channel.send(`Now playing: **${ server.queue[0].title } [${ server.queue[0].timestamp }]**`);
 					play(connection, message);
 				} else {
 					connection.disconnect();
+					server.queue = [];
 				}
 			});
 		}
@@ -92,11 +97,12 @@ module.exports = {
 		function getQueue(message) {
 			const server = servers[message.guild.id];
 			let counter = 1;
+			const tracks = server.queue.slice(1);
 			const embed = new Discord.MessageEmbed()
 				.setTitle('Upcoming:')
 				.setColor('#e60965');
-			server.queue.forEach(elmnt => {
-				embed.addField(`${counter}. ${elmnt.title}`, elmnt.timestamp);
+			tracks.forEach(track => {
+				embed.addField(`${counter}. ${track.title}`, track.timestamp);
 				counter++;
 			});
 			return embed;
