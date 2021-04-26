@@ -33,7 +33,7 @@ Returns todays price information on BTC, ETH & XLM
 Searches for a MW player's stats. User with ID + battle, xbl or psn  
 Example - !mw dandk#21361 battle
 
-### !choose [option1, option2, option3]
+### !choose [option1, option2, option3, ... option<sub>n</sub>]
 Picks from a list of comma separated values
 
 ### !urban [query]
