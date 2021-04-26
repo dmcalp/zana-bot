@@ -17,8 +17,17 @@ Adjusts the volume of the current song (0.1 - 1 inclusive)
 ### !pause
 Pauses the current song, use again to resume
 
+### !mute
+Mutes the audio of the current song, if active
+
 ### !leave
 Disconnects Zana from the current voice channel
+
+### !queue
+Returns current playlist if available
+
+### !crypto
+Returns todays price information on BTC, ETH & XLM
 
 ### !mw [user+ID] \[platform]
 Searches for a MW player's stats. User with ID + battle, xbl or psn  
@@ -28,7 +37,7 @@ Example - !mw dandk#21361 battle
 Picks from a list of comma separated values
 
 ### !urban [query]
-Returns the first result from Urban Dictionary
+Returns the first result from Urban Dictionary for a given query
 
 ### !d2p [amount]
 Converts a given number of dollars into the GBP equivalent
