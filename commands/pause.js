@@ -8,7 +8,7 @@ module.exports = {
     }
     if (!server.dispatcher.paused) {
       server.dispatcher.pause(true);
-      message.reply('Track paused, use `!pause` again to resume.');
+      message.reply('Track paused, use `!pause` or the react button again to resume.');
     } else {
       server.dispatcher.resume();
     }
