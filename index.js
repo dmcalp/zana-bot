@@ -38,7 +38,7 @@ zana.on('message', async (message) => {
 		message.channel.send('Something went wrong!');
 	}
 
-	/*
+	{/*
 		if (command === 'mw') {
 		const tag = args[0];
 		const platform = args[1];
@@ -114,6 +114,60 @@ zana.on('message', async (message) => {
 		});
 	}
 	*/
+	}
+
+});
+
+
+zana.once('ready', () => {
+	
+	zana.user.setPresence({
+		status: 'online',
+		activity: {
+			name: 'code fail',
+			type: 'WATCHING'
+		}
+	});
+	
+});
+
+bantaVoiceChannels = {
+	'Gaming' : '254004652671107084',
+	'Rocket League' : '756934080830111825',
+	'Warzone' : '834168503023960124',
+	'Sea of Thieves' : '854048031119507456',
+	'Runescape' : '788829192233418812',
+}
+
+zana.on('presenceUpdate', (oldPresence, newPresence) => {
+	if (oldPresence.status != newPresence.status) return; 	// ignore users that are just changing online to idle etc
+	if (!newPresence.member.voice.channel) return; 					// ignore users that aren't in voice chat anyway
+	
+	if (newPresence.guild.id == '254004652671107083') {
+		let currentActivity = newPresence.activities[0];
+		let username = newPresence.user.username;
+		
+		if (currentActivity == 'Rocket League') {
+			if (newPresence.member.voice.channelID != bantaVoiceChannels['Rocket League']) {		// if user isn't already in RL channel
+				newPresence.member.voice.setChannel(bantaVoiceChannels['Rocket League']);					// move them into it
+				console.log(`User ${username} has been moved into the Rocket League channel`);
+			}
+		}
+
+		if (currentActivity == 'Runelite') {
+			if (newPresence.member.voice.channelID != bantaVoiceChannels['Runescape']) {		// if user isn't already in Runescape channel
+				newPresence.member.voice.setChannel(bantaVoiceChannels['Runescape']);					// move them into it
+				console.log(`User ${username} has been moved into the Runescape channel`);
+			}
+		}
+
+		if (bantaVoiceChannels[currentActivity] === undefined) {
+			if (newPresence.member.voice.channelID != bantaVoiceChannels['Gaming']) {		// if user isn't already in Gaming channel
+				newPresence.member.voice.setChannel(bantaVoiceChannels['Gaming']);				// move them into it
+				console.log(`User ${username} has been moved into the Gaming channel.`);
+			}
+		}
+	}
 });
 
 zana.login(token);
