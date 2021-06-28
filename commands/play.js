@@ -73,7 +73,6 @@ module.exports = {
 		
 		function play(connection, message) {
 			const server = servers[message.guild.id];
-			// const song = server.queue.shift();
 			const song = server.queue[0];
 			server.dispatcher = connection.play(
 				ytdl(song.url || song, {
