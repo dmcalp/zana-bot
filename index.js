@@ -143,8 +143,8 @@ zana.on('presenceUpdate', (oldPresence, newPresence) => {
 	if (oldPresence.status != newPresence.status) return; 	// ignore users that are just changing online to idle etc
 	if (!newPresence.member.voice.channel) return; 					// ignore users that aren't in voice chat anyway
 	
-	if (newPresence.guild.id == '254004652671107083') {
-		let currentActivity = newPresence.activities[0];
+	if (newPresence.guild.id == '254004652671107083') {			// only concerned with 'banta' guild, otherwise the bot sees users 
+		let currentActivity = newPresence.activities[0];			// that are also in other servers with another instance of the bot
 		let username = newPresence.user.username;
 		
 		if (currentActivity == 'Rocket League') {
