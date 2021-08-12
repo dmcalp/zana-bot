@@ -1,7 +1,7 @@
 /* eslint-disable brace-style */
 const Discord = require('discord.js');
 const { prefix, token, mwemail, mwpass } = require('./config.json');
-const api = require('call-of-duty-api')();
+// const api = require('call-of-duty-api')();
 const fs = require('fs');
 
 const zana = new Discord.Client();
@@ -11,7 +11,7 @@ zana.once('ready', () => {
 	console.log('Zana is ready!');
 });
 
-api.login(mwemail, mwpass).catch(error => console.log.apply(error));
+// api.login(mwemail, mwpass).catch(error => console.log.apply(error));
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -23,7 +23,7 @@ for (const file of commandFiles) {
 const servers = {};
 
 zana.on('message', async (message) => {
-	if (!message.guild) return; // prevents use in direct messages
+	if (!message.guild) return; 	// prevents use in direct messages
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).split(/ +/);
@@ -131,43 +131,46 @@ zana.once('ready', () => {
 	
 });
 
-bantaVoiceChannels = {
-	'Gaming' : '254004652671107084',
-	'Rocket League' : '756934080830111825',
-	'Warzone' : '834168503023960124',
-	'Sea of Thieves' : '854048031119507456',
-	'Runescape' : '788829192233418812',
-}
+/**
+ * Beginning of auto voice channel switch based on current activity
+ */
+// bantaVoiceChannels = {
+// 	'Gaming' : '254004652671107084',
+// 	'Rocket League' : '756934080830111825',
+// 	'Warzone' : '834168503023960124',
+// 	'Sea of Thieves' : '854048031119507456',
+// 	'Runescape' : '788829192233418812',
+// }
 
-zana.on('presenceUpdate', (oldPresence, newPresence) => {
-	if (oldPresence.status != newPresence.status) return; 	// ignore users that are just changing online to idle etc
-	if (!newPresence.member.voice.channel) return; 					// ignore users that aren't in voice chat anyway
+// zana.on('presenceUpdate', (oldPresence, newPresence) => {
+// 	if (!newPresence.member.voice.channel) return; 					// ignore users that aren't in voice chat anyway
+// 	if (oldPresence.status != newPresence.status) return; 	// ignore users that are just changing online to idle etc
 	
-	if (newPresence.guild.id == '254004652671107083') {			// only concerned with 'banta' guild, otherwise the bot sees users 
-		let currentActivity = newPresence.activities[0];			// that are also in other servers with another instance of the bot
-		let username = newPresence.user.username;
+// 	if (newPresence.guild.id == '254004652671107083') {			// only concerned with 'banta' guild, otherwise the bot sees users 
+// 		let currentActivity = newPresence.activities[0];			// that are also in other servers with another instance of the bot
+// 		let username = newPresence.user.username;
 		
-		if (currentActivity == 'Rocket League') {
-			if (newPresence.member.voice.channelID != bantaVoiceChannels['Rocket League']) {		// if user isn't already in RL channel
-				newPresence.member.voice.setChannel(bantaVoiceChannels['Rocket League']);					// move them into it
-				console.log(`User ${username} has been moved into the Rocket League channel`);
-			}
-		}
+// 		if (currentActivity == 'Rocket League') {
+// 			if (newPresence.member.voice.channelID != bantaVoiceChannels['Rocket League']) {		// if user isn't already in RL channel
+// 				newPresence.member.voice.setChannel(bantaVoiceChannels['Rocket League']);					// move them into it
+// 				console.log(`User ${username} has been moved into the Rocket League channel`);
+// 			}
+// 		}
 
-		if (currentActivity == 'Runelite') {
-			if (newPresence.member.voice.channelID != bantaVoiceChannels['Runescape']) {		// if user isn't already in Runescape channel
-				newPresence.member.voice.setChannel(bantaVoiceChannels['Runescape']);					// move them into it
-				console.log(`User ${username} has been moved into the Runescape channel`);
-			}
-		}
+// 		if (currentActivity == 'RuneLite') {
+// 			if (newPresence.member.voice.channelID != bantaVoiceChannels['Runescape']) {		// if user isn't already in Runescape channel
+// 				newPresence.member.voice.setChannel(bantaVoiceChannels['Runescape']);					// move them into it
+// 				console.log(`User ${username} has been moved into the Runescape channel`);
+// 			}
+// 		}
 
-		if (bantaVoiceChannels[currentActivity] === undefined) {
-			if (newPresence.member.voice.channelID != bantaVoiceChannels['Gaming']) {		// if user isn't already in Gaming channel
-				newPresence.member.voice.setChannel(bantaVoiceChannels['Gaming']);				// move them into it
-				console.log(`User ${username} has been moved into the Gaming channel.`);
-			}
-		}
-	}
-});
+// 		if (bantaVoiceChannels[currentActivity] === undefined) {
+// 			if (newPresence.member.voice.channelID != bantaVoiceChannels['Gaming']) {		// if user isn't already in Gaming channel
+// 				newPresence.member.voice.setChannel(bantaVoiceChannels['Gaming']);				// move them into it
+// 				console.log(`User ${username} has been moved into the Gaming channel.`);
+// 			}
+// 		}
+// 	}
+// });
 
 zana.login(token);
