@@ -28,47 +28,51 @@ module.exports = {
 						'title' : video.title,
 						'timestamp' : video.timestamp,
 					});
-						if (server.queue[1]) {
-							const response = await message.channel.send(getQueue(message));
-						} else {
-							const response = await message.channel.send(`${video.title} **[${video.timestamp}]** is now playing.`);
 
-						response.react('⏸️')
-							.then(() => response.react('⏭️'))
-							.then(() => response.react('⏹️'))
-							.then(() => response.react('🔇'));
+					const response = (server.queue.length > 1) 
+						? await message.channel.send(getQueue(message))
+						: await message.channel.send(`${video.title} **[${video.timestamp}]** is now playing.`);
 
-						const filter = (reaction, user) => {
-							return ['⏸️', '⏭️', '⏹️', '🔇'].includes(reaction.emoji.name) && user.id != '626948446095671307';
-						};
-						const collector = response.createReactionCollector(filter);
+					response.react('⏸️')
+						.then(() => response.react('⏭️'))
+						.then(() => response.react('⏹️'))
+						.then(() => response.react('🔇'));
 
-						collector.on('collect', reaction => {
-							if (reaction.emoji.name === '⏸️') {
-								pause.execute(message, args, servers);
-							}
-							if (reaction.emoji.name === '⏭️') {
-								skip.execute(message, args, servers);
-							}
-							if (reaction.emoji.name === '⏹️') {
-								leave.execute(message, args, servers);
-							}
-							if (reaction.emoji.name === '🔇') {
-								mute.execute(message, args, servers);
-							}
-						});
-					}
+					const filter = (reaction, user) => {
+						return ['⏸️', '⏭️', '⏹️', '🔇'].includes(reaction.emoji.name) 
+							&& user.id != '626948446095671307';	// bot's own id 
+					};
+
+					const collector = response.createReactionCollector(filter);
+					collector.on('collect', reaction => {
+						if (reaction.emoji.name === '⏸️') {
+							pause.execute(message, args, servers);
+						}
+						if (reaction.emoji.name === '⏭️') {
+							skip.execute(message, args, servers);
+						}
+						if (reaction.emoji.name === '⏹️') {
+							leave.execute(message, args, servers);
+						}
+						if (reaction.emoji.name === '🔇') {
+							mute.execute(message, args, servers);
+						}
+					});
 				}
 				else {
 					message.reply('Nothing was found, try again.');
 					return;
 				}
 			}
-			if (server.queue.length == 1) {
+			if (server.queue.length == 1) {	
+				// play the first song, any further requests are left to auto start when this one ends
 				message.member.voice.channel.join().then((connection) => {
 					play(connection, message);
 				});
 			}
+		}
+		else {
+			message.reply("Please join a voice channel in order to request music!");
 		}
 		
 		function play(connection, message) {
