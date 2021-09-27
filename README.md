@@ -16,19 +16,19 @@ Adjusts the volume of the current song (0.1 - 1 inclusive) <br>
 Example - ```!volume 0.2```
 <br>
 <br>
-## ```!skip``` (or react emoji after requested)
+## ```!skip``` (or react emoji after song request)
 Skips to the next song in the queue
 <br>
 <br>
-## ```!pause``` (or react emoji after requested)
+## ```!pause``` (or react emoji after song request)
 Pauses the current song, use again to resume
 <br>
 <br>
-## ```!mute``` (or react emoji after requested)
+## ```!mute``` (or react emoji after song request)
 Mutes the audio of the current song, if active
 <br>
 <br>
-## ```!leave``` (or react emoji after requested)
+## ```!leave``` (or react emoji after song request)
 Disconnects Zana from the current voice channel
 <br>
 <br>
