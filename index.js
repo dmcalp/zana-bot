@@ -1,6 +1,6 @@
 /* eslint-disable brace-style */
 const Discord = require('discord.js');
-const { prefix, token, mwemail, mwpass } = require('./config.json');
+const { prefix, token } = require('./config.json');
 const fs = require('fs');
 
 const zana = new Discord.Client();
@@ -20,7 +20,7 @@ for (const file of commandFiles) {
 const servers = {};
 
 zana.on('message', async (message) => {
-	if (!message.guild) return; 	// prevents use in direct messages
+	if (!message.guild) return; // prevents use in direct messages
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).split(/ +/);
