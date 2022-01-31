@@ -4,7 +4,7 @@
 ##### A simple music oriented chat bot with various useful commands
 ---
 ### Commands
-## !play <url or query>
+## ```!play <url or query>```
 Plays any valid youtube URL or the first YT result found from a query  
 Example - ```!play www.youtube.com/watch?v1234567890``` or ```!play thunderstruck```
 
@@ -55,7 +55,7 @@ Converts a given number of dollars into the GBP equivalent<br>
 Example - ```!d2p 250```
 <br>
 <br>
-## ```!p2d [amount]```
+## ```!p2d <amount>```
 Converts a given number of pounds into the USD equivalent<br>
 Example - ```!p2d 45.30```
 <br>
