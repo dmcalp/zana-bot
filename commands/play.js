@@ -82,7 +82,7 @@ module.exports = {
 				ytdl(song.url || song, {
 					filter: 'audioonly',
 					bitrate: 64000,
-					highWaterMark: 1 << 25,
+					highWaterMark: 50,
 				}));
 			server.dispatcher.setVolume(0.2);
 			server.dispatcher.on('finish', () => {

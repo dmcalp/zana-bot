@@ -42,7 +42,7 @@ zana.once('ready', () => {
 	zana.user.setPresence({
 		status: 'online',
 		activity: {
-			name: 'code fail',
+			name: 'bugs occur',
 			type: 'WATCHING'
 		}
 	});

@@ -13,14 +13,14 @@
         "ansi-regex": "^6.0.1",
         "coingecko-api": "^1.0.10",
         "discord.js": "^12.5.1",
-        "eslint": "^6.4.0",
+        "eslint": "^6.8.0",
         "ffmpeg": "0.0.4",
         "ffmpeg-static": "^4.2.7",
-        "node-fetch": "^2.6.1",
+        "node-fetch": "^2.6.7",
         "python-shell": "^3.0.0",
         "request": "^2.88.2",
         "ws": "^8.2.2",
         "yt-search": "^2.10.1",
-        "ytdl-core": "^4.9.1"
+        "ytdl-core": "^4.10.0"
     }
 }
