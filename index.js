@@ -22,10 +22,10 @@ const servers = {};
 zana.on('message', async (message) => {
 	if (!message.guild) return; 	// prevents use in direct messages
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
-
+	
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const command = args.shift().toLowerCase();
-
+	
 	if (!zana.commands.has(command)) return;
 
 	try {
@@ -42,7 +42,7 @@ zana.once('ready', () => {
 	zana.user.setPresence({
 		status: 'online',
 		activity: {
-			name: 'bugs occur',
+			name: 'error messages',
 			type: 'WATCHING'
 		}
 	});
