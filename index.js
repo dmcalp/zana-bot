@@ -1,52 +1,40 @@
 /* eslint-disable brace-style */
-const Discord = require('discord.js');
-const { prefix, token } = require('./config.json');
-const fs = require('fs');
 
-const zana = new Discord.Client();
-zana.commands = new Discord.Collection();
+const fs = require('fs');
+const path = require('node:path');
+const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
+const { token } = require('./config.json');
+
+const zana = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+zana.commands = new Collection();
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const filePath = path.join(commandsPath, file);
+	const command = require(filePath);
+	// set a new item in the Collection
+	// key as the command name, value as exported module
+	zana.commands.set(command.data.name, command);
+}
 
 zana.once('ready', () => {
 	console.log('Zana is ready!');
+	zana.user.setActivity('bugs occur', { type: ActivityType.Watching });
 });
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
-for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	zana.commands.set(command.name, command);
-}
-
-const servers = {};
-
-zana.on('message', async (message) => {
-	if (!message.guild) return; 	// prevents use in direct messages
-	if (!message.content.startsWith(prefix) || message.author.bot) return;
-	
-	const args = message.content.slice(prefix.length).split(/ +/);
-	const command = args.shift().toLowerCase();
-	
-	if (!zana.commands.has(command)) return;
+zana.on('interactionCreate', async interaction => {
+	if (!interaction.isChatInputCommand()) return;
+	const command = zana.commands.get(interaction.commandName);
+	if (!command) return;
 
 	try {
-		zana.commands.get(command).execute(message, args, servers, Discord);
-	}	catch (error) {
-		console.error(error);
-		message.channel.send('Something went wrong!');
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error)
+		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
-});
-
-
-zana.once('ready', () => {
-	
-	zana.user.setPresence({
-		status: 'online',
-		activity: {
-			name: 'error messages',
-			type: 'WATCHING'
-		}
-	});
-	
 });
 
 zana.login(token);
