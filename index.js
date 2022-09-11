@@ -5,7 +5,16 @@ const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, ActivityType } = require('discord.js');
 const { token } = require('./config.json');
 
-const zana = new Client({ intents: [GatewayIntentBits.Guilds] });
+const servers = {};
+
+const zana = new Client({ 
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildVoiceStates,
+		GatewayIntentBits.MessageContent
+	] 
+});
 
 zana.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
@@ -21,7 +30,7 @@ for (const file of commandFiles) {
 
 zana.once('ready', () => {
 	console.log('Zana is ready!');
-	zana.user.setActivity('bugs occur', { type: ActivityType.Watching });
+	zana.user.setActivity('error messages', { type: ActivityType.Watching });
 });
 
 zana.on('interactionCreate', async interaction => {
@@ -30,7 +39,7 @@ zana.on('interactionCreate', async interaction => {
 	if (!command) return;
 
 	try {
-		await command.execute(interaction);
+		await command.execute(interaction, servers);
 	} catch (error) {
 		console.error(error)
 		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
