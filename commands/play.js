@@ -3,10 +3,6 @@ const yts = require('yt-search');
 const ytdl = require('ytdl-core');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@discordjs/voice');
 const { NoSubscriberBehavior } = require('@discordjs/voice');
-// const pause = require('./pause.js');
-// const skip = require('./skip.js');
-// const mute = require('./mute.js');
-// const leave = require('./leave.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -111,42 +107,12 @@ module.exports = {
 			interaction.reply("Please join a voice channel in order to request music!");
 		}
 		
-		// response.react('⏸️')
-		// 	.then(() => response.react('⏭️'))
-		// 	.then(() => response.react('⏹️'))
-		// 	.then(() => response.react('🔇'));
-
-		// const filter = (reaction, user) => {
-		// 	return ['⏸️', '⏭️', '⏹️', '🔇'].includes(reaction.emoji.name) 
-		// 		&& user.id != '626948446095671307';	// bot's own id 
-		// };
-
-		// const collector = response.createReactionCollector(filter);
-		// collector.on('collect', reaction => {
-		// 	if (reaction.emoji.name === '⏸️') {
-		// 		//pause.execute(interaction, args, servers);
-		// 		console.log("paused");
-		// 	}
-		// 	if (reaction.emoji.name === '⏭️') {
-		// 		console.log("skipped");
-		// 		//skip.execute(interaction, args, servers);
-		// 	}
-		// 	if (reaction.emoji.name === '⏹️') {
-		// 		console.log("leave");
-		// 		//leave.execute(interaction, args, servers);
-		// 	}
-		// 	if (reaction.emoji.name === '🔇') {
-		// 		console.log("mute");
-		// 		//mute.execute(interaction, args, servers);
-		// 	}
-		// });
-
 	},
 };
 
 async function getQueue(server, interaction) {
 	let counter = 1;
-	const tracks = server.queue.slice(1); // skip currently playing track
+	const tracks = server.queue.slice(1); 
 	const queueEmbed = new EmbedBuilder()
 		.setTitle('Upcoming:')
 		.setColor('#e60965');
