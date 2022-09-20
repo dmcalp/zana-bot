@@ -39,24 +39,13 @@ module.exports = {
 					});
 					
 					await interaction.reply({ 
-						content: `You've added *${video.title}* **[${video.timestamp}]**`, 
+						content: `You've added: ***${video.title}*** [${video.timestamp}]`, 
 						ephemeral: true 
 					});
-					
-					console.log(server.queue);
 
 					// show queue if something is already playing
 					if (server.queue.length > 1) {
-						let counter = 1;
-						const tracks = server.queue.slice(1); // skip currently playing track
-						const queueEmbed = new EmbedBuilder()
-							.setTitle('Upcoming:')
-							.setColor('#e60965');
-						tracks.forEach(track => {
-							queueEmbed.addFields({ name: 'Upcoming', value: `${track.title} ${track.timestamp}` });
-							counter++;
-						});
-						await interaction.channel.send({ embeds: [queueEmbed] });
+						await getQueue(server, interaction);
 					}
 				}
 				else {
@@ -73,60 +62,54 @@ module.exports = {
 					guildId: interaction.guild.id,
 					adapterCreator: interaction.guild.voiceAdapterCreator,
 				});
-				
-				const audioPlayer = createAudioPlayer({
+
+				server.audioPlayer = createAudioPlayer({
 					behaviors: {
 						noSubscriber: NoSubscriberBehavior.Pause,
 					},
 				});
 				
-				const subscription = connection.subscribe(audioPlayer);
-				
-				const server = servers[interaction.guild.id];
+				const subscription = connection.subscribe(server.audioPlayer);
 				
 				let song = server.queue[0];
 				
 				let resource = createAudioResource(ytdl(song.url || song, {
 					filter: 'audioonly',
+					quality: 'lowestaudio',
 				}));
 
-				if (server.queue.length <= 1) {
-					audioPlayer.play(resource);
-				}
+				server.audioPlayer.play(resource);
 				
-				interaction.channel.send(`Now playing *${song.title}* **[${song.timestamp}]** requested by ${song.requestedBy}`);
+				const announcement = `Now playing: ***${song.title}*** [${song.timestamp}] requested by **${song.requestedBy}**`;
 
-				console.log(server.queue);
-
-				audioPlayer.on('idle', () => {
+				interaction.channel.send(announcement);
+					
+				server.audioPlayer.on('idle', () => {
 					server.queue.shift();
-					if (server.queue[0].title != undefined) {
+					if (server.queue.length > 0) {
 						song = server.queue[0];
 						resource = createAudioResource(ytdl(song.url || song, {
 							filter: 'audioonly',
 						}));
-						audioPlayer.play(resource);
+						server.audioPlayer.play(resource);
+						interaction.channel.send(announcement);
 					} else {
-						interaction.channel.send("Terminating connection - Queue empty");
-						connection.destroy();
+						interaction.channel.send("Queue empty - leaving voice channel.");
+						if (server.queue.length == 0) connection.destroy();
 					}
 				});
-
-				audioPlayer.on('error', error => {
-					console.log(error);
-					interaction.channel.send('Terminating connection.');
+				
+				server.audioPlayer.on('error', error => {
+					console.log(error.name);
+					interaction.channel.send(`Error (${error.message}) - terminating connection.`);
 					connection.destroy();
+					servers[interaction.guild.id] = { queue: [] };
 				});
 			}
 		}
 		else {
 			interaction.reply("Please join a voice channel in order to request music!");
 		}
-		
-		// const response = (server.queue.length > 1) 
-		// 	? await interaction.channel.send(getQueue(interaction))
-		// 	: await interaction.channel.send(`${video.title} **[${video.timestamp}]** is now playing.`);
-		
 		
 		// response.react('⏸️')
 		// 	.then(() => response.react('⏭️'))
@@ -158,49 +141,19 @@ module.exports = {
 		// 	}
 		// });
 
-
-		// function play(connection, interaction) {
-		// 	const server = servers[interaction.guild.id];
-		// 	const song = server.queue[0];
-		// 	server.dispatcher = connection.play(
-		// 		ytdl(song.url || song, {
-		// 			filter: 'audioonly',
-		// 			bitrate: 64000,
-		// 			highWaterMark: 50,
-		// 		}));
-		// 	server.dispatcher.setVolume(0.2);
-		// 	server.dispatcher.on('idle', () => {
-		// 		if (server.queue[1]) {
-		// 			server.queue.shift();
-		// 			if (server.queue[0].title != undefined) interaction.reply(`Now playing: **${ server.queue[0].title } [${ server.queue[0].timestamp }]**`);
-		// 			play(connection, interaction);
-		// 		} else {
-		// 			connection.destroy();
-		// 			server.queue = [];
-		// 		}
-		// 	});
-		// }
-		
-		
-		
-		
-		
-		
-		
-		
-		// function getQueue(interaction) {
-		// 	const server = servers[interaction.guild.id];
-		// 	let counter = 1;
-		// 	const tracks = server.queue.slice(1); // skip currently playing track
-		// 	const embed = new EmbedBuilder()
-		// 		.setTitle('Upcoming:')
-		// 		.setColor('#e60965');
-		// 	tracks.forEach(track => {
-		// 		embed.addFields({ name: 'counter', value: `${track.title} ${track.timestamp}` });
-		// 		counter++;
-		// 	});
-		// 	return embed;
-		// }
-
 	},
 };
+
+async function getQueue(server, interaction) {
+	let counter = 1;
+	const tracks = server.queue.slice(1); // skip currently playing track
+	const queueEmbed = new EmbedBuilder()
+		.setTitle('Upcoming:')
+		.setColor('#e60965');
+	tracks.forEach(track => {
+		queueEmbed.addFields({ name: `${counter}.`, value: `${track.title} **[${track.timestamp}]** (requested by *${track.requestedBy}*)` });
+		counter++;
+	});
+	await interaction.channel.send({ embeds: [queueEmbed] });
+}
+
