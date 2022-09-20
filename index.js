@@ -23,8 +23,6 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 for (const file of commandFiles) {
 	const filePath = path.join(commandsPath, file);
 	const command = require(filePath);
-	// set a new item in the Collection
-	// key as the command name, value as exported module
 	zana.commands.set(command.data.name, command);
 }
 
