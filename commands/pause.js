@@ -7,18 +7,18 @@ module.exports = {
 
     async execute(interaction, servers) {
         const server = servers[interaction.guild.id];
-        let action = "";
+        let action = "An error occurred.";
         
         if (server.audioPlayer._state.status == 'playing') {
             server.audioPlayer.pause();
-            action = "paused";
+            action = "Track paused.";
         }
         else if (server.audioPlayer._state.status == 'paused') {
             server.audioPlayer.unpause();
-            action = "resumed";
+            action = "Track resumed.";
         }
         
-        interaction.reply(`Track ${action}.`);
+        interaction.reply(action);
 
     },
 }
