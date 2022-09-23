@@ -6,9 +6,9 @@ const { NoSubscriberBehavior } = require('@discordjs/voice');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-	.setName('play')
-	.setDescription('Plays audio from a youtube search or link')
-	.addStringOption(option => option.setName('input').setDescription('Song name or URL').setRequired(true)),
+		.setName('play')
+		.setDescription('Plays audio from a youtube search or link')
+		.addStringOption(option => option.setName('input').setDescription('Song name or URL').setRequired(true)),
 	
 	async execute(interaction, servers) {
 		if (!servers[interaction.guild.id]) {
@@ -88,7 +88,7 @@ module.exports = {
 							filter: 'audioonly',
 						}));
 						server.audioPlayer.play(resource);
-						interaction.channel.send(announcement);
+						interaction.channel.send(`Now playing: ***${song.title}*** [${song.timestamp}] requested by **${song.requestedBy}**`);
 					} else {
 						interaction.channel.send("Queue empty - leaving voice channel.");
 						if (server.queue.length == 0) connection.destroy();
