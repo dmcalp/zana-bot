@@ -72,6 +72,7 @@ module.exports = {
 				let resource = createAudioResource(ytdl(song.url || song, {
 					filter: 'audioonly',
 					quality: 'lowestaudio',
+					highWaterMark: 1 << 25,
 				}));
 
 				server.audioPlayer.play(resource);
@@ -98,7 +99,7 @@ module.exports = {
 				server.audioPlayer.on('error', error => {
 					console.log(error.name);
 					interaction.channel.send(`Error (${error.message}) - terminating connection.`);
-					connection.destroy();
+					//connection.destroy();
 					servers[interaction.guild.id] = { queue: [] };
 				});
 			}
