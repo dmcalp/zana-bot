@@ -11,9 +11,9 @@ module.exports = {
 
         if (getVoiceConnection(interaction.guild.id) !== undefined) {
             server.audioPlayer.stop(true);
-            interaction.reply('Skipping track..')
+            interaction.reply('Skipping track..');
         } else {
-            interaction.reply({content: 'Skip failed - no media playing.', ephemeral: true});
+            interaction.reply({ content: 'Skip failed - no media playing.', ephemeral: true });
         }
     },
-}
+};
