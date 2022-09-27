@@ -27,7 +27,7 @@ for (const file of commandFiles) {
 
 zana.once('ready', () => {
     console.log('Zana is ready!');
-    zana.user.setActivity('error messages', { type: ActivityType.Watching });
+    zana.user.setActivity('error messages', { type: ActivityType.Streaming });
 });
 
 zana.on('interactionCreate', async (interaction) => {
