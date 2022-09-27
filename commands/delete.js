@@ -1,21 +1,19 @@
+const { SlashCommandBuilder } = require('discord.js');
+
 module.exports = {
-  name: 'delete',
-  description: 'Removes in bulk an amount of messages excluding the users !delete message',
-  execute(message, args) {
-    if (args.length > 0) {
-			if (args[0] > 1 && args[0] <= 10) {
-				const amount = parseInt(args[0]) + 1;
-				message.channel.bulkDelete(amount).catch((err) => {
-					console.error(err);
-					message.reply('Error deleting messages!');
-				});
-			} else {
-				message.reply('The second argument must be 2-10 inclusive');
-			}
-		} else {
-			message.reply(
-				'This method requires an additional argument (2-10 inclusive)'
-			);
-		}
-  }
-}
+
+    data: new SlashCommandBuilder()
+        .setName('delete')
+        .setDescription('Bulk delete 1-10 messages')
+        .addIntegerOption((option) => option.setName('input').setDescription('A number from 1 - 10 inclusive').setRequired(true)),
+
+    async execute(interaction) {
+        const delAmount = interaction.options.getInteger('input');
+
+        if (delAmount > 0 && delAmount <= 10) {
+            interaction.channel.bulkDelete(delAmount)
+                .then((messages) => interaction.reply(`Bulk deleted ${messages.size} messages.`))
+                .catch(console.error);
+        }
+    },
+};

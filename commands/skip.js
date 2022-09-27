@@ -1,13 +1,20 @@
+const { SlashCommandBuilder } = require('discord.js');
+const { getVoiceConnection } = require('@discordjs/voice');
+
 module.exports = {
-  name: 'skip',
-  description: 'Skips the song',
-  execute(message, args, servers) {
-    const server = servers[message.guild.id];
-    if (message.guild.voice.connection) {
-      server.dispatcher.end();
-      message.channel.send('Skipping song..');
-    } else {
-      message.reply('I must be in a voice channel in order to skip!');
-    }
-  }
-}
+
+    data: new SlashCommandBuilder()
+        .setName('skip')
+        .setDescription('Skips the current track'),
+
+    async execute(interaction, servers) {
+        const server = servers[interaction.guild.id];
+
+        if (getVoiceConnection(interaction.guild.id) !== undefined) {
+            server.audioPlayer.stop(true);
+            interaction.reply('Skipping track..');
+        } else {
+            interaction.reply({ content: 'Skip failed - no media playing.', ephemeral: true });
+        }
+    },
+};

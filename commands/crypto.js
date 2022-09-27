@@ -1,52 +1,41 @@
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const CoinGecko = require('coingecko-api');
+
 module.exports = {
-  name: 'crypto',
-  description: 'Returns current BTC, ETH & XLM prices.',
-  async execute(message, args, servers, Discord) {
-    const CG = new CoinGecko();
-    
-    let data = await CG.coins.markets({
-      localization: false,
-      ids: ['bitcoin', 'ethereum', 'stellar'],
-      vs_currency: 'gbp',
-    });
-    
-    let emojiBIT = (data.data[0].price_change_percentage_24h > 0) ? '✅' : "❌";
-    let emojiETH = (data.data[1].price_change_percentage_24h > 0) ? '✅' : "❌";
-    let emojiXLM = (data.data[2].price_change_percentage_24h > 0) ? '✅' : "❌";
-    let opBIT = (data.data[0].price_change_percentage_24h > 0) ? '+' : "";
-    let opETH = (data.data[1].price_change_percentage_24h > 0) ? '+' : "";
-    let opXLM = (data.data[2].price_change_percentage_24h > 0) ? '+' : "";
 
-    const bitcoinembed = new Discord.MessageEmbed()
-      .setTitle(`${data.data[0].name} (${data.data[0].symbol.toUpperCase()})`)
-      .setColor('#f5a00f')
-      .addField('Current Price:', `£${data.data[0].current_price.toLocaleString()}`, true)
-      .addField('24hr Change (%)', `${opBIT}${Math.round(data.data[0].price_change_percentage_24h * 100) / 100}% ${emojiBIT}`)
-      .addField('24hr Low', `£${data.data[0].low_24h.toLocaleString()}`, true)
-      .addField('24hr High', `£${data.data[0].high_24h.toLocaleString()}`, true)
-      .setThumbnail(data.data[0].image);
+    data: new SlashCommandBuilder()
+        .setName('crypto')
+        .setDescription('Returns current Bitcoin, Ethereum and Polygon prices'),
 
-    const ethereumembed = new Discord.MessageEmbed()
-      .setTitle(`${data.data[1].name} (${data.data[1].symbol.toUpperCase()})`)
-      .setColor('#596687')
-      .addField('Current Price:', `£${Math.round(data.data[1].current_price).toLocaleString()}`)
-      .addField('24hr Change (%)', `${opETH}${Math.round(data.data[1].price_change_percentage_24h * 100) / 100}%  ${emojiETH}`)
-      .addField('24hr Low', `£${Math.round(data.data[1].low_24h).toLocaleString()}`, true)
-      .addField('24hr High', `£${Math.round(data.data[1].high_24h).toLocaleString()}`, true)
-      .setThumbnail(data.data[1].image);
+    async execute(interaction) {
+        const CG = new CoinGecko();
 
-    const stellarembed = new Discord.MessageEmbed()
-      .setTitle(`${data.data[2].name} (${data.data[2].symbol.toUpperCase()})`)
-      .setColor('#000000')
-      .addField('Current Price:', `£${data.data[2].current_price.toLocaleString()}`)
-      .addField('24hr Change (%)', `${opXLM}${Math.round(data.data[2].price_change_percentage_24h * 100) / 100}%  ${emojiXLM}`)
-      .addField('24hr Low', `£${data.data[2].low_24h.toLocaleString()}`, true)
-      .addField('24hr High', `£${data.data[2].high_24h.toLocaleString()}`, true)    
-      .setThumbnail(data.data[2].image);
-    
-    message.reply(bitcoinembed);
-    message.reply(ethereumembed);
-    message.reply(stellarembed);
-  }
-}
+        const coins = await CG.coins.markets({
+            localization: false,
+            ids: ['bitcoin', 'ethereum', 'matic-network'],
+            vs_currency: 'gbp',
+        });
+
+        const coinEmbeds = [];
+
+        for (let i = 0; i < coins.data.length; i++) {
+            const emoji = (coins.data[i].price_change_percentage_24h > 0) ? '✅' : '❌';
+            const sign = (coins.data[i].price_change_percentage_24h > 0) ? '+' : '';
+
+            const embed = new EmbedBuilder()
+                .setTitle(`${coins.data[i].name} (${coins.data[i].symbol.toUpperCase()})`)
+                .setColor('#e60965')
+                .addFields(
+                    { name: 'Current Price', value: `£${coins.data[i].current_price.toLocaleString()}` },
+                    { name: '24hr Change (%)', value: `${sign}${Math.round(coins.data[i].price_change_percentage_24h * 100) / 100}% ${emoji}` },
+                    { name: '24hr Low', value: `£${coins.data[i].low_24h.toLocaleString()}`, inline: true },
+                    { name: '24hr High', value: `£${coins.data[i].high_24h.toLocaleString()}`, inline: true },
+                )
+                .setThumbnail(coins.data[i].image);
+
+            coinEmbeds.push(embed);
+        }
+
+        interaction.reply({ embeds: [...coinEmbeds] });
+    },
+};
