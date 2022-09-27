@@ -4,6 +4,7 @@ const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require('@d
 const { NoSubscriberBehavior } = require('@discordjs/voice');
 
 module.exports = {
+
     data: new SlashCommandBuilder()
         .setName('play')
         .setDescription('Plays audio from a youtube search or link')
