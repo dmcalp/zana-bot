@@ -4,7 +4,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('queue')
-        .setDescription('Returns the track queue, if any.'),
+        .setDescription('Returns the track queue, if any'),
 
     async execute(interaction, servers) {
         const server = servers[interaction.guild.id];

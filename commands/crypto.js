@@ -5,7 +5,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('crypto')
-        .setDescription('Returns current Bitcoin, Ethereum and Polygon prices.'),
+        .setDescription('Returns current Bitcoin, Ethereum and Polygon prices'),
 
     async execute(interaction) {
         const CG = new CoinGecko();

@@ -4,7 +4,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('choose')
-        .setDescription('Chooses between comma-separated values.')
+        .setDescription('Chooses between comma-separated values')
         .addStringOption((option) => option.setName('input').setDescription('MW2, RL, Arma 3 etc.').setRequired(true)),
 
     async execute(interaction) {
